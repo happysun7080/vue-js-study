@@ -1,31 +1,32 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <header>
+    <hgroup class="my-5">
+      <h1>나의 할일</h1>
+      <em>{{ today }}</em>
+    </hgroup>
+  </header>
+  <todo-list-container />
 </template>
 
+<script>
+import { inject } from "vue";
+import TodoListContainer from "./components/TodoListContainer.vue";
+export default {
+  name: "App",
+  setup() {
+    const today = inject("today");
+    return { today };
+  },
+  components: { TodoListContainer },
+};
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+hgroup {
+  text-align: center;
+  font-family: "Arial Bold";
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+hgroup h1 {
+  font-weight: bolder;
 }
 </style>

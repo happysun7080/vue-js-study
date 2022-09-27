@@ -1,35 +1,55 @@
-<template></template>
+<template>
+  <todo-list-new />
+  <section class="container">
+    <div class="row justify-content-center m-2">
+      <todo-list-main />
+    </div>
+  </section>
+</template>
 
 <script>
 import { ref, readonly, provide } from "vue";
+import { useStorage } from "../compositions/storage";
+import TodoListNew from "./TodoListNew.vue";
+import TodoListMain from "./TodoListMain.vue";
 
 export default {
   name: "TodoListContainer",
   setup() {
-    // Todo 리스트를 가지는 변수. 반응성을 가질 수 있도록 ref 이용
-    // 프록시 객체이므로 실제 배열값은 value를 통해 접근 가능
     const todos = ref([]);
-
-    // todos 변수를 자식 컴포넌트들이 업데이트(변경)할 수 없도록 readonly 속성 부여
+    const { loadTodos, saveTodos, storage_id } = useStorage();
     provide("todos", readonly(todos));
-
-    // localStorage로부터 todos 배열에 들어올 데이터를 불러오는 것은 Storage 모듈이 한다.
-    // 따라서 해당 모듈이 데이터를 넣어줄 수 있는 함수인 initTodos 함수도 선언
     const initTodos = (init_todos) => {
       todos.value = init_todos;
     };
-
-    // provide를 수행한 컴포넌트에서 업데이트도 함께 수행
-    const addTodo = (todo, date) => {};
-    const removeTodo = (id) => {};
-    const completeTodo = (id) => {};
-
+    const addTodo = (job, date) => {
+      todos.value.push({
+        id: storage_id.value++,
+        job: job,
+        date: date,
+        completed: false,
+      });
+      saveTodos(todos);
+    };
+    const removeTodo = (id) => {
+      todos.value.splice(id, 1);
+      todos.value.forEach((todo, idx) => {
+        todo.id = idx;
+      });
+      saveTodos(todos);
+    };
+    const completeTodo = (id) => {
+      todos.value.find((todo) => todo.id == id).completed = true;
+      saveTodos(todos);
+    };
     provide("addTodo", addTodo);
     provide("removeTodo", removeTodo);
     provide("completeTodo", completeTodo);
+    loadTodos(initTodos);
+  },
+  components: {
+    TodoListNew,
+    TodoListMain,
   },
 };
 </script>
-
-<style>
-</style>
